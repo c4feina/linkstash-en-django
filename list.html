@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Enlaces | LinkStash{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+    <div>
+        <h1>Mis enlaces</h1>
+        <p>Un lugar simple para guardar cosas que quiero revisar después.</p>
+    </div>
+</section>
+
+<form class="search-form" method="get">
+    <input
+        type="search"
+        name="q"
+        value="{{ query }}"
+        placeholder="Buscar por título o nota"
+    >
+    <button type="submit">Buscar</button>
+
+    {% if query %}
+        <a href="{% url 'bookmark-list' %}">Limpiar</a>
+    {% endif %}
+</form>
+
+<div class="bookmark-list">
+    {% for bookmark in bookmarks %}
+        <article class="bookmark-card">
+            <div class="bookmark-main">
+                <h2>{{ bookmark.title }}</h2>
+                <a href="{{ bookmark.url }}" target="_blank" rel="noopener noreferrer">
+                    {{ bookmark.url }}
+                </a>
+
+                {% if bookmark.notes %}
+                    <p>{{ bookmark.notes }}</p>
+                {% endif %}
+
+                <small>{{ bookmark.created_at|date:"d/m/Y H:i" }}</small>
+            </div>
+
+            <form method="post" action="{% url 'bookmark-delete' bookmark.pk %}">
+                {% csrf_token %}
+                <button class="danger-link" type="submit">Eliminar</button>
+            </form>
+        </article>
+    {% empty %}
+        <p class="empty-state">Todavía no guardaste ningún enlace.</p>
+    {% endfor %}
+</div>
+{% endblock %}
